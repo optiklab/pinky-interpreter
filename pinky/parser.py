@@ -44,6 +44,16 @@ class Parser:
   def primary(self):
     if self.match(TOK_INTEGER): return Integer(int(self.previous_token().lexeme), line=self.previous_token().line)
     if self.match(TOK_FLOAT): return Float(float(self.previous_token().lexeme), line=self.previous_token().line)
+
+    #############################################
+    # TODO: 
+    # Change the parser to allow adding nodes of 
+    # the type 'Bool' and 'String'.
+    # Your parser should allow expressions like:
+    # 2 + (47 * -21) + ' cm' - false
+    # PS: Don't worry about interpreter yet!
+    #############################################
+
     if self.match(TOK_LPAREN):
       expr = self.expr()
       if (not self.match(TOK_RPAREN)):
