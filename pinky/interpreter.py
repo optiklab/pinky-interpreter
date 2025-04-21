@@ -206,6 +206,41 @@ class Interpreter:
           self.interpret(node.body_stmts, block_new_env) # pass the new child environment for the scope of the while block
           i = i + step
 
+    elif isinstance(node, FuncDecl):
+      env.set_func(node.name, (node, env)) # we also store the environment in which the function was declared
+
+    elif isinstance(node, FuncCall):
+      # We must make sure the function was declared
+      func = env.get_func(node.name)
+      if not func:
+        runtime_error(f'Function {node.name!r} not declared.', node.line)
+
+      # Fetch the function declaration
+      func_decl = func[0] #--> get the function declaration node that was saved in the environment
+      func_env  = func[1] #--> get the environment in which the function was originally declared
+
+      # Does the number of args match the expected number of params
+      if len(node.args) != len(func_decl.params):
+        runtime_error(f'Function {func_decl.name!r} expected {len(func_decl.params)} params but {len(node.args)} args were passed.', node.line)
+
+      # We need to evaluate all the args
+      args = []
+      for arg in node.args:
+        args.append(self.interpret(arg, env))
+
+      # Create a new nested block environment for the function
+      new_func_env = func_env.new_env()
+
+      # We must create local variables in the new child environment of the function for the parameters and bind the argument values to them!
+      for param, argval in zip(func_decl.params, args):
+        new_func_env.set_var(param.name, argval)
+
+      # Finally, we ask to interpret the body_stmts of the function declaration
+      self.interpret(func_decl.body_stmts, new_func_env)
+
+    elif isinstance(node, FuncCallStmt):
+      self.interpret(node.expr, env)
+
   def interpret_ast(self, node):
     # Entry point of our interpreter creating a brand new global/parent environment
     env = Environment()
