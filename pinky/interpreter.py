@@ -236,12 +236,22 @@ class Interpreter:
         new_func_env.set_var(param.name, argval)
 
       # Finally, we ask to interpret the body_stmts of the function declaration
-      self.interpret(func_decl.body_stmts, new_func_env)
+      try:
+        self.interpret(func_decl.body_stmts, new_func_env)
+      except Return as e:
+        return e.args[0] # <-- args is the arguments passed to the exception
 
     elif isinstance(node, FuncCallStmt):
       self.interpret(node.expr, env)
+
+    elif isinstance(node, RetStmt):
+      raise Return(self.interpret(node.value, env))
 
   def interpret_ast(self, node):
     # Entry point of our interpreter creating a brand new global/parent environment
     env = Environment()
     self.interpret(node, env)
+
+
+class Return(Exception):
+  pass
