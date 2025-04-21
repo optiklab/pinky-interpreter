@@ -233,7 +233,7 @@ class Interpreter:
 
       # We must create local variables in the new child environment of the function for the parameters and bind the argument values to them!
       for param, argval in zip(func_decl.params, args):
-        new_func_env.set_var(param.name, argval)
+        new_func_env.set_param_as_local_var(param.name, argval)
 
       # Finally, we ask to interpret the body_stmts of the function declaration
       try:

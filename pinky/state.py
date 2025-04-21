@@ -29,6 +29,9 @@ class Environment:
     # If we did not find the variable in the environments above, we create it in the original one
     original_env.vars[name] = value
 
+  def set_param_as_local_var(self, name, value):
+    self.vars[name] = value
+
   def get_func(self, name):
     '''
     Searches the current environment and all parent environments for a function name (returns None if it does not find any)
