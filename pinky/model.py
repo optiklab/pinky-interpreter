@@ -38,7 +38,7 @@ class UnOp(Expr):
   '''
   Example: -operand
   '''
-  def __init__(self, op: Token, operand: Expr) 
+  def __init__(self, op: Token, operand: Expr):
     assert isinstance(op, Token), op
     assert isinstance(operand, Expr), operand
     self.op = op
