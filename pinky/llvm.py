@@ -40,11 +40,13 @@ i32  = ir.IntType(32)
 i8   = ir.IntType(8)
 i1   = ir.IntType(1)
 
+############################################################
+# LLVM module containing an environment/dict for vars
+############################################################
 class LLVMModule:
-  #TODO: This class contains some important information about our LLVM module
-  #TODO: We can also include an "environment" to store variables and their content
-
-  self.vars = {}
+  def __init__(self):
+    self.module = ir.Module("pinky_subset")
+    self.vars = {}
 
   def get_var(self, name):
     # TODO:
@@ -54,15 +56,76 @@ class LLVMModule:
     # TODO:
     pass
 
-
+############################################################
+# Class to visit all nodes of the AST generating their IR
+############################################################
 class LLVMGenerator:
-  def generate():
-    #TODO:
-    pass
+  def generate(self, node, module):
+    if isinstance(node, Integer):
+      #TODO:
+      pass
+
+    if isinstance(node, Float):
+      #TODO:
+      pass
+
+    if isinstance(node, Bool):
+      #TODO:
+      pass
+
+    if isinstance(node, String):
+      compile_error(f"Strings are not implemented in our current LLVM IR generator.", node.line)
+
+    if isinstance(node, Grouping):
+      #TODO:
+      pass
+
+    if isinstance(node, Identifier):
+      #TODO:
+      pass
+
+    if isinstance(node, Assignment):
+      #TODO:
+      pass
+
+    if isinstance(node, BinOp):
+      #TODO:
+      pass
+
+    if isinstance(node, UnOp):
+      #TODO:
+      pass
+
+    if isinstance(node, LogicalOp):
+      #TODO:
+      pass
+
+    if isinstance(node, Stmts):
+      #TODO:
+      pass
+
+    if isinstance(node, PrintStmt):
+      #TODO:
+      pass
+
+    if isinstance(node, IfStmt):
+      #TODO:
+      pass
+
+    if isinstance(node, WhileStmt):
+      #TODO:
+      pass
+
+    if isinstance(node, FuncDecl):
+      compile_error(f"Function declarations are not implemented in the current LLVM IR generator.", node.line)
+
+    if isinstance(node, FuncCall):
+      compile_error(f"Function calls are not implemented in the current LLVM IR generator.", node.line)
+
   def generate_main(self, node):
-    #TODO: generate the main module (with the main function inside)
-    generate(...recursively for all nodes of the AST)
-    pass
+    module = LLVMModule()
+    self.generate(node, module)
+    return module
 
 ############################################################
 # Main function that invokes the LLVM IR Generator
