@@ -96,8 +96,95 @@ class LLVMGenerator:
         else:
           compile_error(f"Unsupported operator {node.op.lexeme!r} between {lefttype} and {righttype}.", node.op.line)
 
+      if node.op.token_type == TOK_MINUS:
+        if lefttype == TYPE_NUMBER and righttype == TYPE_NUMBER:
+          return (TYPE_NUMBER, module.builder.fsub(leftval, rightval))
+        else:
+          compile_error(f'Unsupported operator {node.op.lexeme!r} between {lefttype} and {righttype}.', node.op.line)
+
+      if node.op.token_type == TOK_STAR:
+        if lefttype == TYPE_NUMBER and righttype == TYPE_NUMBER:
+          return (TYPE_NUMBER, module.builder.fmul(leftval, rightval))
+        else:
+          compile_error(f'Unsupported operator {node.op.lexeme!r} between {lefttype} and {righttype}.', node.op.line)
+
+      if node.op.token_type == TOK_SLASH:
+        if rightval == 0:
+          compile_error(f'Division by zero.', node.line)
+        if lefttype == TYPE_NUMBER and righttype == TYPE_NUMBER:
+          return (TYPE_NUMBER, module.builder.fdiv(leftval, rightval))
+        else:
+          compile_error(f'Unsupported operator {node.op.lexeme!r} between {lefttype} and {righttype}.', node.op.line)
+
+      if node.op.token_type == TOK_MOD:
+        if lefttype == TYPE_NUMBER and righttype == TYPE_NUMBER:
+          return (TYPE_NUMBER, module.builder.frem(leftval, rightval))
+        else:
+          compile_error(f'Unsupported operator {node.op.lexeme!r} between {lefttype} and {righttype}.', node.op.line)
+
+      if node.op.token_type == TOK_EXP:
+        # TODO: Implement exponent operator using a sequence of multiplications
+        pass
+
+      if node.op.token_type == TOK_GT:
+        if (lefttype == TYPE_NUMBER and righttype == TYPE_NUMBER):
+          return (TYPE_BOOL, module.builder.fcmp_ordered('>', leftval, rightval))
+        else:
+          compile_error(f'Unsupported operator {node.op.lexeme!r} between {lefttype} and {righttype}.', node.op.line)
+
+      if node.op.token_type == TOK_GE:
+        if (lefttype == TYPE_NUMBER and righttype == TYPE_NUMBER):
+          return (TYPE_BOOL, module.builder.fcmp_ordered('>=', leftval, rightval))
+        else:
+          compile_error(f'Unsupported operator {node.op.lexeme!r} between {lefttype} and {righttype}.', node.op.line)
+
+      if node.op.token_type == TOK_LT:
+        if (lefttype == TYPE_NUMBER and righttype == TYPE_NUMBER):
+          return (TYPE_BOOL, module.builder.fcmp_ordered('<', leftval, rightval))
+        else:
+          compile_error(f'Unsupported operator {node.op.lexeme!r} between {lefttype} and {righttype}.', node.op.line)
+
+      if node.op.token_type == TOK_LE:
+        if (lefttype == TYPE_NUMBER and righttype == TYPE_NUMBER):
+          return (TYPE_BOOL, module.builder.fcmp_ordered('<=', leftval, rightval))
+        else:
+          compile_error(f'Unsupported operator {node.op.lexeme!r} between {lefttype} and {righttype}.', node.op.line)
+
+      if node.op.token_type == TOK_EQEQ:
+        if (lefttype == TYPE_NUMBER and righttype == TYPE_NUMBER):
+          return (TYPE_BOOL, module.builder.fcmp_ordered('==', leftval, rightval))
+        elif (lefttype == TYPE_BOOL and righttype == TYPE_BOOL):
+          return (TYPE_BOOL, module.builder.icmp_signed('==', leftval, rightval))
+        else:
+          compile_error(f'Unsupported operator {node.op.lexeme!r} between {lefttype} and {righttype}.', node.op.line)
+
+      if node.op.token_type == TOK_NE:
+        if (lefttype == TYPE_NUMBER and righttype == TYPE_NUMBER):
+          return (TYPE_BOOL, module.builder.fcmp_ordered('!=', leftval, rightval))
+        elif (lefttype == TYPE_BOOL and righttype == TYPE_BOOL):
+          return (TYPE_BOOL, module.builder.icmp_signed('!=', leftval, rightval))
+        else:
+          compile_error(f'Unsupported operator {node.op.lexeme!r} between {lefttype} and {righttype}.', node.op.line)
+
     if isinstance(node, UnOp):
-      pass
+      operandtype, operandval = self.generate(node.operand, module)
+      if node.op.token_type == TOK_MINUS:
+        if operandtype == TYPE_NUMBER:
+          return (TYPE_NUMBER, module.builder.neg(operandval))
+        else:
+          compile_error(f'Unsupported operator {node.op.lexeme!r} with {operandtype}.', node.op.line)
+
+      if node.op.token_type == TOK_PLUS:
+        if operandtype == TYPE_NUMBER:
+          return (TYPE_NUMBER, operandval)
+        else:
+          compile_error(f'Unsupported operator {node.op.lexeme!r} with {operandtype}.', node.op.line)
+
+      elif node.op.token_type == TOK_NOT:
+        if operandtype == TYPE_BOOL:
+          return (TYPE_BOOL, module.builder.not_(operandval)) # Bitwise complement
+        else:
+          compile_error(f'Unsupported operator {node.op.lexeme!r} with {operandtype}.', node.op.line)
 
     if isinstance(node, LogicalOp):
       pass
