@@ -42,10 +42,10 @@
 #
 # Instructions to load and store variables
 #
-#      ('LOAD_GLOBAL', name) # Push a global variable name from memory to the stack
-#      ('STORE_GLOBAL, name) # Save top of the stack into global variable by name
-#      ('LOAD_LOCAL', slot)  # Push a local variable from a stack slot/index to the top of the stack
-#      ('STORE_LOCAL, slot)  # Save top of the stack to local variable by slot/index 
+#      ('LOAD_GLOBAL', slot) # Push a global variable from memory to the stack (identified by an index/slot)
+#      ('STORE_GLOBAL, slot) # Save top of the stack into global variable (identified by an index/slot)
+#      ('LOAD_LOCAL', slot)  # Push a local variable from a stack index/slot to the top of the stack
+#      ('STORE_LOCAL, slot)  # Save top of the stack to local variable by index/slot 
 #
 # Instructions to manage control-flow (if-else, while, etc.)
 #
@@ -269,11 +269,11 @@ class VM:
     if val == 0 or val == False:
       self.pc = self.labels[label]
 
-  def STORE_GLOBAL(self, name):
-    self.globals[name] = self.POP()
+  def LOAD_GLOBAL(self, slot):
+    self.PUSH(self.globals[slot])
 
-  def LOAD_GLOBAL(self, name):
-    self.PUSH(self.globals[name])
+  def STORE_GLOBAL(self, slot):
+    self.globals[slot] = self.POP()
 
   def LOAD_LOCAL(self, slot):
     self.PUSH(self.stack[slot])

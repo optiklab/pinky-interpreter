@@ -13,8 +13,6 @@ class Compiler:
     self.code = []
     self.locals = []
     self.globals = []
-    self.numglobals = 0
-    self.numlocals = 0
     self.scope_depth = 0
     self.label_counter = 0
 
@@ -44,11 +42,10 @@ class Compiler:
   def end_block(self):
     self.scope_depth -= 1
     # Loop and remove all the locals that are "deeper" than the current scope depth
-    i = self.numlocals - 1
-    while self.numlocals > 0 and self.locals[i].depth > self.scope_depth:
+    i = len(self.locals) - 1
+    while len(self.locals) > 0 and self.locals[i].depth > self.scope_depth:
       self.emit(('POP',))
       self.locals.pop()
-      self.numlocals -= 1
       i -= 1
 
   def compile(self, node):
@@ -151,15 +148,14 @@ class Compiler:
         new_symbol = Symbol(node.left.name, self.scope_depth)
         if self.scope_depth == 0:
           self.globals.append(new_symbol)
-          self.emit(('STORE_GLOBAL', new_symbol.name))
-          self.numglobals += 1
+          new_global_slot = len(self.globals) - 1
+          self.emit(('STORE_GLOBAL', new_global_slot))
         else:
           self.locals.append(new_symbol)
-          self.numlocals += 1
       else:
         sym, slot = symbol
         if sym.depth == 0:
-          self.emit(('STORE_GLOBAL', sym.name))
+          self.emit(('STORE_GLOBAL', slot))
         else:
           self.emit(('STORE_LOCAL', slot))
 
@@ -170,7 +166,7 @@ class Compiler:
       else:
         sym, slot = symbol
         if sym.depth == 0:
-          self.emit(('LOAD_GLOBAL', sym.name))
+          self.emit(('LOAD_GLOBAL', slot))
         else:
           self.emit(('LOAD_LOCAL', slot))
 
