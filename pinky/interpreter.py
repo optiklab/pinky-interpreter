@@ -1,6 +1,7 @@
 from utils import *
 from model import *
 from tokens import *
+import codecs
 
 ###############################################################################
 # Constants for different runtime value types
@@ -142,4 +143,4 @@ class Interpreter:
 
     elif isinstance(node, PrintStmt):
       exprtype, exprval = self.interpret(node.value)
-      print(exprval)
+      print(codecs.escape_decode(bytes(str(exprval), "utf-8"))[0].decode("utf-8"), end=node.end)
