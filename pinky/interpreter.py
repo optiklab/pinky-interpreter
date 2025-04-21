@@ -122,3 +122,13 @@ class Interpreter:
           return (TYPE_BOOL, not operandval)
         else:
           runtime_error(f'Unsupported operator {node.op.lexeme!r} with {operandtype}.', node.op.line)
+
+    elif isinstance(node, LogicalOp):
+      lefttype, leftval = self.interpret(node.left)
+      if node.op.token_type == TOK_OR:
+        if leftval:
+          return (lefttype, leftval)
+      elif node.op.token_type == TOK_AND:
+        if not leftval:
+          return (lefttype, leftval)
+      return self.interpret(node.right)
