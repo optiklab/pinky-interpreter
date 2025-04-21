@@ -152,6 +152,20 @@ class Parser:
       val = self.expr()
       return PrintStmt(val, end, line=self.previous_token().line)
 
+  # <if_stmt>  ::=  "if" <expr> "then" <stmts> ( "else" <stmts> )? "end"
+  def if_stmt(self):
+    self.expect(TOK_IF)
+    test = self.expr()
+    self.expect(TOK_THEN)
+    then_stmts = self.stmts()
+    if self.is_next(TOK_ELSE):
+      self.advance() # consume the else
+      else_stmts = self.stmts()
+    else:
+      else_stmts = None
+    self.expect(TOK_END)
+    return IfStmt(test, then_stmts, else_stmts, line=self.previous_token().line)
+
   def stmt(self):
     # Predictive parsing, where the next token predicts what is the next statement
     # How far do we lookahead? Different algorithms: LL(1), LALR(1), LR(1), LR(2)
@@ -159,8 +173,8 @@ class Parser:
       return self.print_stmt(end='')
     if self.peek().token_type == TOK_PRINTLN:
       return self.print_stmt(end='\n')
-    #elif self.peek().token_type == TOK_IF:
-    #  return self.if_stmt()
+    elif self.peek().token_type == TOK_IF:
+      return self.if_stmt()
     #elif self.peek().token_type == TOK_WHILE:
     #  return self.while_stmt()
     #elif self.peek().token_type == TOK_FOR:
@@ -168,12 +182,13 @@ class Parser:
     #elif self.peek().token_type == TOK_FUNC:
     #  return self.func_decl()
     else:
-      #TODO: What does *else* means?
+      #TODO: What do we need to handle inside this 'else' statement?
       pass
 
   def stmts(self):
     stmts = []
-    while self.curr < len(self.tokens):  # Change soon because we can have an "end" or "else"
+    # Loop all statements of the current block (meaning until we find an "end", or "else", or EOF
+    while self.curr < len(self.tokens) and not self.is_next(TOK_ELSE) and not self.is_next(TOK_END):
       stmt = self.stmt()
       stmts.append(stmt)
     return Stmts(stmts, line=self.previous_token().line)

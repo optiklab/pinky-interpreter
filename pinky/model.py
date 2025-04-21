@@ -151,6 +151,22 @@ class PrintStmt(Stmt):
     return f'PrintStmt({self.value}, end={self.end!r})'
 
 
+class IfStmt(Stmt):
+  '''
+  "if" <expr> "then" <then_stmts> ("else" <else_stmts>)? "end"
+  '''
+  def __init__(self, test, then_stmts, else_stmts, line):
+    assert isinstance(test, Expr), test
+    assert isinstance(then_stmts, Stmts), then_stmts
+    assert else_stmts is None or isinstance(else_stmts, Stmts), else_stmts
+    self.test = test
+    self.then_stmts = then_stmts
+    self.else_stmts = else_stmts
+    self.line = line
+  def __repr__(self):
+    return f'IfStmt({self.test}, then:{self.then_stmts}, else:{self.else_stmts})'
+
+
 class WhileStmt(Stmt):
   #TODO:
   pass
@@ -160,9 +176,6 @@ class Assignment(Stmt):
   #TODO:
   pass
 
-class IfStmt(Stmt):
-  #TODO:
-  pass
 
 class ForStmt(Stmt):
   #TODO:

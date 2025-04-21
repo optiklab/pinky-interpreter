@@ -1,4 +1,7 @@
-print 1 + 2
-println 3 * 2^2
-println("test")
-print("This is a test of break\nline.\n")
+println 1 + 2
+
+-- Simple if statement test
+if 5 ~= 2 then
+  println("Entered the consequence (then) 1")
+  println("Entered the consequence (then) 2")
+end
