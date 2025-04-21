@@ -1,4 +1,4 @@
-# Initialize the variable
+-- Initialize the variable
 pi := 3.141592
 
 x := 8.23

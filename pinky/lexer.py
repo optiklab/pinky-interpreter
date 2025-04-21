@@ -53,7 +53,13 @@ class Lexer:
   def handle_identifier(self):
     while self.peek().isalnum() or self.peek() == '_':
       self.advance()
-    self.add_token(TOK_IDENTIFIER)
+    # Check if the identifier matches a key in the keywords dict
+    text = self.source[self.start:self.curr]
+    keyword_type = keywords.get(text)
+    if keyword_type == None:
+      self.add_token(TOK_IDENTIFIER)
+    else:
+      self.add_token(keyword_type)
 
   def add_token(self, token_type):
     self.tokens.append(Token(token_type, self.source[self.start:self.curr], self.line))
