@@ -1,12 +1,10 @@
-println  true == true       --> true
-println  true == false      --> false
-println  false == true      --> false
-println  false == false     --> true
-println  true ~= true       --> false
-println  true ~= false      --> true
-println  false ~= true      --> true
-println  false ~= false     --> false
-println  3 > 2 ~= false     --> true
-println  "this" == "that"   --> false
-println  ~(-1>2)            --> true
-println  "a" + "b" == "ab"  --> true
+x := 100
+y := 200
+z := 300
+
+println(x)
+println(y)
+println(z)
+
+a := x + 1
+println(a)
