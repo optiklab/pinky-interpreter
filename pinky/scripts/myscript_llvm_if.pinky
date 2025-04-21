@@ -1,0 +1,6 @@
+x := 13.4 + 2
+if x > 0 then
+  println(1)
+else
+  println(0)
+end
