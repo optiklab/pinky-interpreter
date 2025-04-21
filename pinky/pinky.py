@@ -52,8 +52,7 @@ if __name__ == '__main__':
 
     compiler = Compiler()
     code = compiler.generate_code(ast)
-    for instruction in code:
-      print(instruction)
+    compiler.print_code()
 
     #vm = VM()
     #vm.run(code)

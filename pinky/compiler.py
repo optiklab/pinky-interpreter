@@ -72,6 +72,19 @@ class Compiler:
       for stmt in node.stmts:
         self.compile(stmt)
 
+  def print_code(self):
+    for instruction in self.code:
+      if instruction[0] == 'LABEL':
+        print(instruction[1] + ':')
+        continue
+      if instruction[0] == 'PUSH':
+        print(f"    {instruction[0]} {stringify(instruction[1][1])}")
+        continue
+      if len(instruction) == 1:
+        print(f"    {instruction[0]}")
+      elif len(instruction) == 2:
+        print(f"    {instruction[0]} {instruction[1]}")
+
   def generate_code(self, node):
     self.emit(('LABEL', 'START'))
     self.compile(node)
