@@ -126,7 +126,7 @@ class Grouping(Expr):
     return f'Grouping({self.value})'
 
 
-def Stmts(Node):
+class Stmts(Node):
   '''
   A list of statements
   '''
@@ -138,19 +138,31 @@ def Stmts(Node):
     return f'Stmts({self.stmts})'
 
 
-def WhileStmt(Stmt):
+class PrintStmt(Stmt):
+  '''
+  Example: print value
+  '''
+  def __init__(self, value, line):
+    assert isinstance(value, Expr), value
+    self.value = value
+    self.line = line
+  def __repr__(self):
+    return f'PrintStmt({self.value})'
+
+
+class WhileStmt(Stmt):
   #TODO:
   pass
 
 
-def Assignment(Stmt):
+class Assignment(Stmt):
   #TODO:
   pass
 
-def IfStmt(Stmt):
+class IfStmt(Stmt):
   #TODO:
   pass
 
-def ForStmt(Stmt):
+class ForStmt(Stmt):
   #TODO:
   pass
