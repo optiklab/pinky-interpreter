@@ -57,6 +57,11 @@ class Compiler:
       self.emit(('POP',))
       self.locals.pop()
       i -= 1
+    # Loop and remove all the functions that were declared in a "deeper" scope than the current scope depth
+    i = len(self.functions) - 1
+    while len(self.functions) > 0 and self.functions[i].depth > self.scope_depth:
+      self.functions.pop()
+      i -= 1
 
   def compile(self, node):
     if isinstance(node, Integer):
@@ -184,6 +189,12 @@ class Compiler:
         else:
           self.emit(('STORE_LOCAL', slot))
 
+    elif isinstance(node, LocalAssignment):
+      self.compile(node.right)
+      new_symbol = Symbol(name=node.left.name, symtype=SYM_VAR, depth=self.scope_depth)
+      self.locals.append(new_symbol)
+      self.emit(('SET_SLOT', str(len(self.locals) - 1) + " (" + str(new_symbol.name) + ")"))
+
     elif isinstance(node, Identifier):
       symbol = self.get_var_symbol(node.name)
       if not symbol:
@@ -239,6 +250,7 @@ class Compiler:
 
     elif isinstance(node, FuncCallStmt):
       self.compile(node.expr)
+      self.emit(('POP',)) # <-- Pop the value from the top of the stack, since we are not capturing that return
 
   def print_code(self):
     i = 0

@@ -284,8 +284,12 @@ class VM:
     self.pc = self.labels[label]
 
   def RTS(self):
-    self.pc = self.frames[-1].ret_pc
-    self.frames.pop()
+    result = self.stack[self.sp - 1]    # fetch the result of the function that was left in the top of the stack just before the RTS
+    while self.sp > self.frames[-1].fp: # Remove all the values of the current active frame from the stack
+      self.POP()
+    self.PUSH(result)                   # set the top of the stack with the return value from the function
+    self.pc = self.frames[-1].ret_pc    # set the returning PC to the one stored in the last call frame
+    self.frames.pop()                   # remove the frame object from the list
 
   def LOAD_GLOBAL(self, slot):
     self.PUSH(self.globals[slot])
