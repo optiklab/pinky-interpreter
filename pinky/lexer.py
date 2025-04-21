@@ -61,10 +61,11 @@ class Lexer:
         if self.match('='):
           self.add_token(TOK_EQ)
       elif ch == '~':
-        if self.match('='):
-          self.add_token(TOK_NE)
-        else:
-          self.add_token(TOK_NOT)
-     # TODO:
-     # <, <=, >, >=, :, :=
+        self.add_token(TOK_NE if self.match('=') else TOK_NOT)
+      elif ch == '<':
+        self.add_token(TOK_LE if self.match('=') else TOK_LT)
+      elif ch == '>':
+        self.add_token(TOK_GE if self.match('=') else TOK_GT)
+      elif ch == ':':
+        self.add_token(TOK_ASSIGN if self.match('=') else TOK_COLON)
     return self.tokens
