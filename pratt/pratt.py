@@ -3,7 +3,7 @@ from utils import *
 from tokens import *
 from lexer import *
 from parser import *
-from parser import *
+from interpreter import *
 
 if __name__ == '__main__':
   if len(sys.argv) != 2:
@@ -25,3 +25,10 @@ if __name__ == '__main__':
     print(f'{Colors.GREEN}AST:{Colors.WHITE}')
     print(f'{Colors.GREEN}***************************************{Colors.WHITE}')
     print_pretty_ast(ast)
+
+    print()
+    print(f'{Colors.GREEN}***************************************{Colors.WHITE}')
+    print(f'{Colors.GREEN}INTERPRETER:{Colors.WHITE}')
+    print(f'{Colors.GREEN}***************************************{Colors.WHITE}')
+    result = Interpreter().interpret(ast)
+    print(result)

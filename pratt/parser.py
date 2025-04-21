@@ -3,12 +3,13 @@ from tokens import *
 from model import *
 
 bp = {
-  '*': 2,
-  '/': 2,
-  '+': 1,
-  '-': 1,
-  '(': 0,
-  ')': 0,
+  '^':  3,
+  '*':  2,
+  '/':  2,
+  '+':  1,
+  '-':  1,
+  '(':  0,
+  ')':  0,
 }
 
 class PrattParser:
@@ -54,7 +55,6 @@ class PrattParser:
       inner = self.expr(rbp=bp['('])
       self.expect(TOK_RPAREN) # <-- consume the remaining ')' token
       return Grouping(inner, line=self.previous_token().line)
-
     if self.match(TOK_INTEGER):
       return Integer(int(self.previous_token().lexeme), line=self.previous_token().line)
     if self.match(TOK_FLOAT):
@@ -64,6 +64,10 @@ class PrattParser:
     if self.match(TOK_PLUS) or self.match(TOK_MINUS) or self.match(TOK_STAR) or self.match(TOK_SLASH):
       op = self.previous_token()
       right = self.expr(bp[op.lexeme])
+      return BinOp(op, left, right, line=op.line)
+    elif self.match(TOK_CARET):
+      op = self.previous_token()
+      right = self.expr(bp[op.lexeme] - 1)
       return BinOp(op, left, right, line=op.line)
 
   def expr(self, rbp=0):
