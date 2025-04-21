@@ -98,6 +98,22 @@ class BinOp(Expr):
     return f'BinOp({self.op.lexeme!r}, {self.left}, {self.right})'
 
 
+class LogicalOp(Expr):
+  '''
+  Example: x and y, x or y
+  '''
+  def __init__(self, op: Token, left: Expr, right: Expr, line):
+    assert isinstance(op, Token), op
+    assert isinstance(left, Expr), left
+    assert isinstance(right, Expr), right
+    self.op = op
+    self.left = left
+    self.right = right
+    self.line = line
+  def __repr__(self):
+    return f'LogicalOp({self.op.lexeme!r}, {self.left}, {self.right})'
+
+
 class Grouping(Expr):
   '''
   Example: ( <expr> )
