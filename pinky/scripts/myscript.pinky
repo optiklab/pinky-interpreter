@@ -21,3 +21,5 @@ end
 for num := 20+x, 5 do
   println("num = " + num)
 end
+
+println(true)
