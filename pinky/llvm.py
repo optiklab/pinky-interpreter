@@ -41,6 +41,14 @@ i8   = ir.IntType(8)
 i1   = ir.IntType(1)
 
 ############################################################
+# A simple dictionary to map Pinky types to LLVM IR types
+############################################################
+typemap = {
+  TYPE_NUMBER: f64,
+  TYPE_BOOL: i1,
+}
+
+############################################################
 # LLVM module containing an environment/dict for vars
 ############################################################
 class LLVMModule:
@@ -57,12 +65,21 @@ class LLVMModule:
     self.vars = {}
 
   def get_var(self, name):
-    # TODO:
-    pass
+    vartype, llvmptr = self.vars.get(name)
+    if vartype is not None:
+      return (vartype, self.builder.load(llvmptr))
+    else:
+      return None
 
-  def set_var(self, name, vartype, value):
-    # TODO:
-    pass
+  def set_var(self, name, pinkytype, value):
+    llvmtype = typemap[pinkytype]
+    if self.vars.get(name) is not None:
+      vartype, llvmptr = self.vars[name]
+      self.builder.store(value, llvmptr)
+    else:
+      llvmptr = self.builder.alloca(llvmtype)
+      self.builder.store(value, llvmptr)
+      self.vars[name] = (pinkytype, llvmptr)
 
 ############################################################
 # Class to visit all nodes of the AST generating their IR
@@ -85,12 +102,16 @@ class LLVMGenerator:
       return self.generate(node.value, module)
 
     if isinstance(node, Identifier):
-      #TODO:
-      pass
+      value = module.get_var(node.name)
+      if value is None:
+        compile_error(f'Undeclared identifier {node.name!r}', node.line)
+      if value[1] is None:
+        compile_error(f'Uninitialized identifier {node.name!r}', node.line)
+      return value
 
-    if isinstance(node, Assignment):
+    if isinstance(node, Assignment) or isinstance(node, LocalAssignment):
       righttype, rightval = self.generate(node.right, module)
-      #TODO: save the variable...
+      module.set_var(node.left.name, righttype, rightval)
 
     if isinstance(node, BinOp):
       lefttype, leftval = self.generate(node.left, module)
@@ -192,7 +213,12 @@ class LLVMGenerator:
           compile_error(f'Unsupported operator {node.op.lexeme!r} with {operandtype}.', node.op.line)
 
     if isinstance(node, LogicalOp):
-      pass
+      lefttype, leftval = self.generate(node.left, module)
+      righttype, rightval = self.generate(node.right, module)
+      if node.op.token_type == TOK_OR:
+        return (TYPE_BOOL, module.builder.or_(leftval, rightval))  # Bitwise OR
+      elif node.op.token_type == TOK_AND:
+        return (TYPE_BOOL, module.builder.and_(leftval, rightval)) # Bitwise AND
 
     if isinstance(node, Stmts):
       for stmt in node.stmts:
