@@ -1,15 +1,35 @@
-x := 0
-
-func foo(n)
-  local x := 999
-  i := 1
-  while i <= n do
-    local x := -1
-    println x 
-    i := i + 1
+-----------------------------------------------------------
+-- Function to print the factorial of a number
+-----------------------------------------------------------
+func factorial(n)
+  mul := 1
+  for i := 1, n do
+    mul := mul * i
   end
-  println x
+  ret mul
 end
 
-foo(6)
+-----------------------------------------------------------
+-- FizzBuzz
+-----------------------------------------------------------
+func fizzbuzz(n)
+  i := 1
+  while i <= n do
+    if i % 3 == 0 and i % 5 == 0 then
+      println "i = " + i + " -> " + "FizzBuzz"
+    else
+      if i % 3 == 0 then
+        println "i = " + i + " -> " + "Fizz"
+      end
+      if i % 5 == 0 then
+        println "i = " + i + " -> " + "Buzz"
+      end
+    end
+    i := i + 1
+  end
+end
+
+x := factorial(6)
 println x
+
+fizzbuzz(30)
