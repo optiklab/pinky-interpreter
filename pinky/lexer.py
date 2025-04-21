@@ -95,6 +95,8 @@ class Lexer:
           self.add_token(TOK_MINUS)
       elif ch == '=':
         if self.match('='):
+          self.add_token(TOK_EQEQ)
+        else:
           self.add_token(TOK_EQ)
       elif ch == '~':
         self.add_token(TOK_NE if self.match('=') else TOK_NOT)
