@@ -126,6 +126,18 @@ class Grouping(Expr):
     return f'Grouping({self.value})'
 
 
+class Identifier(Expr):
+  '''
+  Example: x, PI, _score, numLives, start_vel
+  '''
+  def __init__(self, name, line):
+    assert isinstance(name, str), name
+    self.name = name
+    self.line = line
+  def __repr__(self):
+    return f'Identifier[{self.name}]'
+
+
 class Stmts(Node):
   '''
   A list of statements
@@ -173,8 +185,17 @@ class WhileStmt(Stmt):
 
 
 class Assignment(Stmt):
-  #TODO:
-  pass
+  '''
+  left := right
+  '''
+  def __init__(self, left, right, line):
+    assert isinstance(left, Expr), left
+    assert isinstance(right, Expr), right
+    self.left = left
+    self.right = right
+    self.line = line
+  def __repr__(self):
+    return f'Assignment({self.left}, {self.right})'
 
 
 class ForStmt(Stmt):
