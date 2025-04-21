@@ -1,1 +1,4 @@
-println (2 + 3) * 5 - 1
+println (2 + 3) * 5 - 1     --> 24
+println true                --> true
+println 1 == 2              --> false
+println ~(3 > 2) or ~true   --> false

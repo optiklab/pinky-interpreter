@@ -50,7 +50,7 @@ class Compiler:
         self.emit(('LE',))
       elif node.op.token_type == TOK_GE:
         self.emit(('GE',))
-      elif node.op.token_type == TOK_EQ:
+      elif node.op.token_type == TOK_EQEQ:
         self.emit(('EQ',))
       elif node.op.token_type == TOK_NE:
         self.emit(('NE',))
@@ -60,7 +60,7 @@ class Compiler:
       if node.op.token_type == TOK_MINUS:
         self.emit(('NEG',))
       elif node.op.token_type == TOK_NOT:
-        self.emit(('PUSH', (TYPE_NUMBER, 1)))
+        self.emit(('PUSH', (TYPE_BOOL, True)))
         self.emit(('XOR',))
 
     elif isinstance(node, LogicalOp):
