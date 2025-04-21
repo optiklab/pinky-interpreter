@@ -1,3 +1,4 @@
+from utils import *
 from tokens import *
 from model import *
 
@@ -21,12 +22,12 @@ class Parser:
 
   def expect(self, expected_type):
     if self.curr >= len(self.tokens):
-      raise SyntaxError(f'Found {self.previous_token().lexeme!r} at the end of parsing')
+      parse_error(f'Found {self.previous_token().lexeme!r} at the end of parsing', self.previous_token().line)
     elif self.peek().token_type == expected_type:
       token = self.advance()
       return token
     else:
-      raise SyntaxError(f'Expected {expected_type!r}, found {self.peek().lexeme!r}.')
+      parse_error(f'Expected {expected_type!r}, found {self.peek().lexeme!r}.', self.peek().line)
 
   def previous_token(self):
     return self.tokens[self.curr - 1]
@@ -46,7 +47,7 @@ class Parser:
     if self.match(TOK_LPAREN):
       expr = self.expr()
       if (not self.match(TOK_RPAREN)):
-        raise SyntaxError(f'Error: ")" expected.')
+        parse_error(f'Error: ")" expected.', self.previous_token().line)
       else:
         return Grouping(expr)
 
