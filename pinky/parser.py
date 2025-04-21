@@ -171,6 +171,15 @@ class Parser:
     self.expect(TOK_END)
     return IfStmt(test, then_stmts, else_stmts, line=self.previous_token().line)
 
+  # <while_stmt>  ::=  "while" <expr> "do" <stmts> "end"
+  def while_stmt(self):
+    self.expect(TOK_WHILE)
+    test = self.expr()
+    self.expect(TOK_DO)
+    body_stmts = self.stmts()
+    self.expect(TOK_END)
+    return WhileStmt(test, body_stmts, line=self.previous_token().line)
+
   def stmt(self):
     # Predictive parsing, where the next token predicts what is the next statement
     # How far do we lookahead? Different algorithms: LL(1), LALR(1), LR(1), LR(2)
@@ -180,8 +189,8 @@ class Parser:
       return self.print_stmt(end='\n')
     elif self.peek().token_type == TOK_IF:
       return self.if_stmt()
-    #elif self.peek().token_type == TOK_WHILE:
-    #  return self.while_stmt()
+    elif self.peek().token_type == TOK_WHILE:
+      return self.while_stmt()
     #elif self.peek().token_type == TOK_FOR:
     #  return self.for_stmt()
     #elif self.peek().token_type == TOK_FUNC:

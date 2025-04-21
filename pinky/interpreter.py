@@ -169,6 +169,16 @@ class Interpreter:
       else:
         self.interpret(node.else_stmts, env.new_env()) # We must create a new child scope for the else-block
 
+    elif isinstance(node, WhileStmt):
+      new_env = env.new_env()
+      while True:
+        testtype, testval = self.interpret(node.test, env)
+        if testtype != TYPE_BOOL:
+          runtime_error(f'While test is not a boolean expression.', node.line)
+        if not testval:
+          break
+        self.interpret(node.body_stmts, new_env) # pass the new child environment for the scope of the while block
+
   def interpret_ast(self, node):
     # Entry point of our interpreter creating a brand new global/parent environment
     env = Environment()
