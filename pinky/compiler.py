@@ -232,6 +232,8 @@ class Compiler:
       # Evaluate all args
       for arg in node.args:
         self.compile(arg)
+      numargs = (TYPE_NUMBER, len(node.args))
+      self.emit(('PUSH', numargs))
       self.emit(('JSR', node.name))
 
     elif isinstance(node, FuncCallStmt):

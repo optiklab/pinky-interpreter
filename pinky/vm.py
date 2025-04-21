@@ -277,7 +277,9 @@ class VM:
       self.pc = self.labels[label]
 
   def JSR(self, label):
-    new_frame = Frame(name=label, ret_pc=self.pc, fp=self.sp)
+    numargstype, numargs = self.POP() # <-- pop the numargs (the last value that was pushed to the top of the stack before JSR)
+    base_pointer = self.sp - numargs
+    new_frame = Frame(name=label, ret_pc=self.pc, fp=base_pointer)
     self.frames.append(new_frame)
     self.pc = self.labels[label] # <-- jump to the subroutine
 
@@ -292,9 +294,13 @@ class VM:
     self.globals[slot] = self.POP()
 
   def LOAD_LOCAL(self, slot):
+    if len(self.frames) > 0:
+      slot += self.frames[-1].fp
     self.PUSH(self.stack[slot])
 
   def STORE_LOCAL(self, slot):
+    if len(self.frames) > 0:
+      slot += self.frames[-1].fp
     self.stack[slot] = self.POP()
 
   def SET_SLOT(self, slot):
