@@ -26,14 +26,11 @@ class Compiler:
     self.code.append(instruction)
 
   def get_symbol(self, name):
-    # Loop all the locals from the local symtab
     i = 0
     for symbol in self.locals:
       if symbol.name == name:
-        return (symbol, i) # <-- return a tuple with the symbol and the "slot" where we can find it in the stack
+        return (symbol, i)
       i += 1
-    i = 0
-    # Loop all the globals from the global symtab
     i = 0
     for symbol in self.globals:
       if symbol.name == name:
@@ -50,6 +47,7 @@ class Compiler:
     i = self.numlocals - 1
     while self.numlocals > 0 and self.locals[i].depth > self.scope_depth:
       self.emit(('POP',))
+      self.locals.pop()
       self.numlocals -= 1
       i -= 1
 
@@ -157,7 +155,6 @@ class Compiler:
           self.numglobals += 1
         else:
           self.locals.append(new_symbol)
-          self.emit(('STORE_LOCAL', self.numlocals))
           self.numlocals += 1
       else:
         sym, slot = symbol

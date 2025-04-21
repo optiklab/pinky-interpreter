@@ -275,5 +275,11 @@ class VM:
   def LOAD_GLOBAL(self, name):
     self.PUSH(self.globals[name])
 
+  def LOAD_LOCAL(self, slot):
+    self.PUSH(self.stack[slot])
+
+  def STORE_LOCAL(self, slot):
+    self.stack[slot] = self.POP()
+
   def HALT(self):
     self.is_running = False
