@@ -39,7 +39,7 @@ class Interpreter:
     elif isinstance(node, Assignment):
       # Evaluate the right-hand side expression
       righttype, rightval = self.interpret(node.right, env)
-      # Update the value of the variable or create a new one
+      # Update the value of the left-hand side variable or create a new one
       env.set_var(node.left.name, (righttype, rightval))
 
     elif isinstance(node, BinOp):
