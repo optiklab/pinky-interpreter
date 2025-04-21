@@ -4,8 +4,10 @@ from tokens import *
 from lexer import *
 from parser import *
 from interpreter import *
+from compiler import *
+from vm import *
 
-VERBOSE = False
+VERBOSE = True
 
 if __name__ == '__main__':
   if len(sys.argv) != 2:
@@ -34,10 +36,21 @@ if __name__ == '__main__':
       print(f'{Colors.GREEN}***************************************{Colors.WHITE}')
       print_pretty_ast(ast)
 
+      #print()
+      #print(f'{Colors.GREEN}***************************************{Colors.WHITE}')
+      #print(f'{Colors.GREEN}INTERPRETER:{Colors.WHITE}')
+      #print(f'{Colors.GREEN}***************************************{Colors.WHITE}')
+    #interpreter = Interpreter()
+    #interpreter.interpret_ast(ast)
+
+    if VERBOSE:
       print()
       print(f'{Colors.GREEN}***************************************{Colors.WHITE}')
-      print(f'{Colors.GREEN}INTERPRETER:{Colors.WHITE}')
+      print(f'{Colors.GREEN}CODE GENERATION:{Colors.WHITE}')
       print(f'{Colors.GREEN}***************************************{Colors.WHITE}')
 
-    interpreter = Interpreter()
-    interpreter.interpret_ast(ast)
+    compiler = Compiler()
+    code = compiler.compile_code(ast)
+    print(code)
+    #vm = VM()
+    #vm.run(code)
