@@ -236,6 +236,12 @@ class Parser:
     self.expect(TOK_END)
     return FuncDecl(name.lexeme, params, body_stmts, line=name.line)
 
+  # <ret_stmt>  ::=  "ret" <expr>
+  def ret_stmt(self):
+    self.expect(TOK_RET)
+    value = self.expr()
+    return RetStmt(value, line=self.previous_token().line)
+
   # <local_assign>  ::=  "local" <assign>
   def local_assign(self):
     self.expect(TOK_LOCAL)

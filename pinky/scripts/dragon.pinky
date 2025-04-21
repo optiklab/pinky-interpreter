@@ -15,31 +15,23 @@ func factorial(n)
 end
 
 func cos(a)
-  a := a * 3.141592 / 180
-  value := 1
-  sign := -1
-  n := 200
-  i := 2
-  while i < n do
-    value := value + (pow(a, i) / factorial(i) * sign)
-    i := i + 2
-    sign := sign * -1
-  end
-  ret value
+  a := a % 360
+  if a == 0   then ret  1.0 end
+  if a == 90  then ret  0.0 end
+  if a == 180 then ret -1.0 end
+  if a == 270 then ret  0.0 end
+  if a == 360 then ret  1.0 end
+  ret -99999
 end
 
 func sin(a)
-  a := a * 3.141592 / 180
-  value := a
-  sign := -1
-  n := 200
-  i := 3
-  while i < n do
-    value := value + (pow(a, i) / factorial(i) * sign)
-    i := i + 2
-    sign := sign * -1
-  end
-  ret value
+  a := a % 360
+  if a == 0   then ret  0.0 end
+  if a == 90  then ret  1.0 end
+  if a == 180 then ret  0.0 end
+  if a == 270 then ret -1.0 end
+  if a == 360 then ret  0.0 end
+  ret -99999
 end
 
 func dragon(size, level, d)
