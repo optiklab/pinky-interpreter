@@ -3,13 +3,14 @@ from tokens import *
 from model import *
 
 bp = {
-  '^':  3,
-  '*':  2,
-  '/':  2,
-  '+':  1,
-  '-':  1,
-  '(':  0,
-  ')':  0,
+  '^':   4,
+  'neg': 3,
+  '*':   2,
+  '/':   2,
+  '+':   1,
+  '-':   1,
+  '(':   0,
+  ')':   0,
 }
 
 class PrattParser:
@@ -59,6 +60,10 @@ class PrattParser:
       return Integer(int(self.previous_token().lexeme), line=self.previous_token().line)
     if self.match(TOK_FLOAT):
       return Float(float(self.previous_token().lexeme), line=self.previous_token().line)
+    if self.match(TOK_MINUS):
+      op = self.previous_token()
+      right = self.expr(rbp=bp['neg'])
+      return UnOp(op, right, line=op.line)
 
   def led(self, left):
     if self.match(TOK_PLUS) or self.match(TOK_MINUS) or self.match(TOK_STAR) or self.match(TOK_SLASH):
