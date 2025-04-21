@@ -56,6 +56,10 @@
 #      ('RTS',)              # Return from subroutine/function
 #      ('HALT',)             # Halt/stops the execution
 
+from defs import *
+from utils import *
+import codecs
+
 class VM:
   def __init__(self):
     self.stack = []
@@ -77,32 +81,53 @@ class VM:
     pass
 
   def PUSH(self, value):
-    #TODO:
-    pass
+    self.stack.append(value)
+    self.sp = self.sp + 1
 
   def POP(self):
-    #TODO:
-    pass
+    self.sp = self.sp - 1
+    return self.stack.pop()
 
   def ADD(self):
-    #TODO:
-    pass
+    righttype, rightval = self.POP()
+    lefttype, leftval = self.POP()
+    if lefttype == TYPE_NUMBER and righttype == TYPE_NUMBER:
+      self.PUSH((TYPE_NUMBER, leftval + rightval))
+      #TODO: think of string concatenation
+    else:
+      vm_error(f'Error on ADD between {lefttype} and {righttype}.', self.pc)
 
   def SUB(self):
-    #TODO:
-    pass
+    righttype, rightval = self.POP()
+    lefttype, leftval = self.POP()
+    if lefttype == TYPE_NUMBER and righttype == TYPE_NUMBER:
+      self.PUSH((TYPE_NUMBER, leftval - rightval))
+    else:
+      vm_error(f'Error on SUB between {lefttype} and {righttype}.', self.pc)
 
   def MUL(self):
-    #TODO:
-    pass
+    righttype, rightval = self.POP()
+    lefttype, leftval = self.POP()
+    if lefttype == TYPE_NUMBER and righttype == TYPE_NUMBER:
+      self.PUSH((TYPE_NUMBER, leftval * rightval))
+    else:
+      vm_error(f'Error on MUL between {lefttype} and {righttype}.', self.pc)
+
+  def DIV(self):
+    righttype, rightval = self.POP()
+    lefttype, leftval = self.POP()
+    if lefttype == TYPE_NUMBER and righttype == TYPE_NUMBER:
+      self.PUSH((TYPE_NUMBER, leftval / rightval))
+    else:
+      vm_error(f'Error on DIV between {lefttype} and {righttype}.', self.pc)
 
   def PRINT(self):
-    #TODO:
-    pass
+    valtype, val = self.POP()
+    print(codecs.escape_decode(bytes(stringify(val), "utf-8"))[0].decode("utf-8"), end='')
 
   def PRINTLN(self):
-    #TODO:
-    pass
+    valtype, val = self.POP()
+    print(codecs.escape_decode(bytes(stringify(val), "utf-8"))[0].decode("utf-8"), end='\n')
 
   def HALT(self):
     self.is_running = False

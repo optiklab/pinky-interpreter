@@ -50,6 +50,11 @@ def runtime_error(message, lineno):
   import sys
   sys.exit(1)
 
+def vm_error(message, pc):
+  print(f'{Colors.RED}[PC: {pc}]: {message} {Colors.WHITE}')
+  import sys
+  sys.exit(1)
+
 class Colors:
   WHITE     = '\033[0m'
   BLUE      = '\033[94m'
