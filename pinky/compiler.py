@@ -3,16 +3,21 @@ from model import *
 from tokens import *
 from utils import *
 
+SYM_VAR  = 'SYM_VAR'
+SYM_FUNC = 'SYM_FUNC'
+
 class Symbol:
-  def __init__(self, name, depth=0):
+  def __init__(self, name, symtype=SYM_VAR, depth=0):
     self.name = name
     self.depth = depth
+    self.symtype = symtype
 
 class Compiler:
   def __init__(self):
     self.code = []
     self.locals = []
     self.globals = []
+    self.functions = []
     self.scope_depth = 0
     self.label_counter = 0
 
@@ -23,7 +28,13 @@ class Compiler:
   def emit(self, instruction):
     self.code.append(instruction)
 
-  def get_symbol(self, name):
+  def get_func_symbol(self, name):
+    # Loop the function list trying to find the first occurrence of that symbol name
+    for symbol in reversed(self.functions):
+      if symbol.name == name:
+        return symbol
+
+  def get_var_symbol(self, name):
     # Loop the locals list in reversed order, trying to find the first occurrence of that symbol name
     for index, symbol in reversed(list(enumerate(self.locals))):
       if symbol.name == name:
@@ -155,9 +166,9 @@ class Compiler:
 
     elif isinstance(node, Assignment):
       self.compile(node.right)
-      symbol = self.get_symbol(node.left.name)
+      symbol = self.get_var_symbol(node.left.name)
       if not symbol:
-        new_symbol = Symbol(node.left.name, self.scope_depth)
+        new_symbol = Symbol(node.left.name, symtype=SYM_VAR, depth=self.scope_depth)
         if self.scope_depth == 0:
           self.globals.append(new_symbol)
           new_global_slot = len(self.globals) - 1
@@ -173,7 +184,7 @@ class Compiler:
           self.emit(('STORE_LOCAL', slot))
 
     elif isinstance(node, Identifier):
-      symbol = self.get_symbol(node.name)
+      symbol = self.get_var_symbol(node.name)
       if not symbol:
         compile_error(f'Variable {node.name} is not defined.', node.line)
       else:
@@ -182,6 +193,32 @@ class Compiler:
           self.emit(('LOAD_GLOBAL', slot))
         else:
           self.emit(('LOAD_LOCAL', slot))
+
+    elif isinstance(node, FuncDecl):
+      var = self.get_var_symbol(node.name)
+      func = self.get_func_symbol(node.name)
+      if func:
+        compile_error(f'A function with the name {node.name} was already declared.', node.line)
+      if var:
+        compile_error(f'A variable with the name {node.name} was already defined in this scope.', node.line)
+      new_func = Symbol(node.name, symtype=SYM_FUNC, depth=self.scope_depth)
+      self.functions.append(new_func)
+
+      end_label = self.make_label()
+      self.emit(('JMP', end_label))
+      self.emit(('LABEL', new_func.name))
+      self.begin_block()
+      self.compile(node.body_stmts)
+      self.end_block()
+      self.emit(('RTS',))
+      self.emit(('LABEL', end_label))
+
+    elif isinstance(node, FuncCall):
+      #TODO: JSR to the function (also activate our "frame" for this call)
+      pass
+
+    elif isinstance(node, FuncCallStmt):
+      self.compile(node.expr)
 
   def print_code(self):
     i = 0

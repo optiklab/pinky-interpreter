@@ -60,9 +60,15 @@ from defs import *
 from utils import *
 import codecs
 
+class Frame:
+  def __init__(self, ret_pc, fp):
+    self.ret_pc = ret_pc
+    self.fp = fp
+
 class VM:
   def __init__(self):
     self.stack = []
+    self.frames = []
     self.labels = {}
     self.globals = {}
     self.pc = 0
