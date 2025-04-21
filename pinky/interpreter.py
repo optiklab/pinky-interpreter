@@ -42,6 +42,12 @@ class Interpreter:
       # Update the value of the left-hand side variable or create a new one
       env.set_var(node.left.name, (righttype, rightval))
 
+    elif isinstance(node, LocalAssignment):
+      # Evaluate the right-hand side expression
+      righttype, rightval = self.interpret(node.right, env)
+      # Always create a new variable in the current scope/environment
+      env.set_local(node.left.name, (righttype, rightval))
+
     elif isinstance(node, BinOp):
       lefttype, leftval  = self.interpret(node.left, env)
       righttype, rightval = self.interpret(node.right, env)
@@ -233,7 +239,7 @@ class Interpreter:
 
       # We must create local variables in the new child environment of the function for the parameters and bind the argument values to them!
       for param, argval in zip(func_decl.params, args):
-        new_func_env.set_param_as_local_var(param.name, argval)
+        new_func_env.set_local(param.name, argval)
 
       # Finally, we ask to interpret the body_stmts of the function declaration
       try:
