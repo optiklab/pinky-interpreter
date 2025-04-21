@@ -281,5 +281,8 @@ class VM:
   def STORE_LOCAL(self, slot):
     self.stack[slot] = self.POP()
 
+  def SET_SLOT(self, slot):
+    pass
+
   def HALT(self):
     self.is_running = False

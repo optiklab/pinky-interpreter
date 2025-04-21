@@ -24,16 +24,14 @@ class Compiler:
     self.code.append(instruction)
 
   def get_symbol(self, name):
-    i = 0
-    for symbol in self.locals:
+    # Loop the locals list in reversed order, trying to find the first occurrence of that symbol name
+    for index, symbol in reversed(list(enumerate(self.locals))):
       if symbol.name == name:
-        return (symbol, i)
-      i += 1
-    i = 0
-    for symbol in self.globals:
+        return (symbol, index)
+    # Loop the globals list in reversed order, trying to find the first occurrence of that symbol name
+    for index, symbol in reversed(list(enumerate(self.globals))):
       if symbol.name == name:
-        return (symbol, i)
-      i += 1
+        return (symbol, index)
     return None
 
   def begin_block(self):
@@ -166,6 +164,7 @@ class Compiler:
           self.emit(('STORE_GLOBAL', new_global_slot))
         else:
           self.locals.append(new_symbol)
+          self.emit(('SET_SLOT', str(len(self.locals) - 1) + f" ({new_symbol.name})"))
       else:
         sym, slot = symbol
         if sym.depth == 0:

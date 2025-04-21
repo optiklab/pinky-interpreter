@@ -30,9 +30,6 @@ class Environment:
     original_env.vars[name] = value
 
   def set_local(self, name, value):
-    '''
-    Sets a new variable in the current/immediate environment (shadowing any previous valeus of that variable name)
-    '''
     self.vars[name] = value
 
   def get_func(self, name):

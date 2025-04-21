@@ -26,7 +26,6 @@ class Decl(Stmt):
   '''
   pass
 
-
 class Integer(Expr):
   '''
   Example: 17
