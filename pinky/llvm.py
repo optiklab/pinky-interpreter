@@ -148,7 +148,7 @@ class LLVMGenerator:
         else:
           compile_error(f'Unsupported operator {node.op.lexeme!r} between {lefttype} and {righttype}.', node.op.line)
 
-      if node.op.token_type == TOK_EXP:
+      if node.op.token_type == TOK_CARET:
         # TODO: Implement exponent operator using a sequence of multiplications
         pass
 
@@ -232,8 +232,26 @@ class LLVMGenerator:
         module.builder.call(module.print_i1, [exprval])  # Call external "print_i1" function declared in a C file
 
     if isinstance(node, IfStmt):
-      #TODO:
-      pass
+      testtype, testval = self.generate(node.test, module)
+      if testtype != TYPE_BOOL:
+        compile_error("Condition test is not a boolean expression.", node.line)
+      # Create LLVM blocks/labels for then, else, and exit
+      then_label = module.function.append_basic_block()
+      else_label = module.function.append_basic_block()
+      exit_label = module.function.append_basic_block()
+      # Test
+      module.builder.cbranch(testval, then_label, else_label)
+      # Then
+      module.builder.position_at_end(then_label)
+      self.generate(node.then_stmts, module)
+      module.builder.branch(exit_label)
+      module.builder.position_at_end(else_label)
+      # Else
+      if node.else_stmts:
+        self.generate(node.else_stmts, module)
+      module.builder.branch(exit_label)
+      # Exit
+      module.builder.position_at_end(exit_label)
 
     if isinstance(node, WhileStmt):
       #TODO:
