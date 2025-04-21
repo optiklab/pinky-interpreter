@@ -1,4 +1,5 @@
 import sys
+from utils import *
 from tokens import *
 from lexer import *
 from parser import *
@@ -11,10 +12,20 @@ if __name__ == '__main__':
   with open(filename) as file:
     source = file.read()
 
-    print("LEXER:")
+    print(f'***************************************')
+    print(f'SOURCE:')
+    print(f'***************************************')
+    print(source)
+
+    print(f'***************************************')
+    print(f'LEXER:')
+    print(f'***************************************')
     tokens = Lexer(source).tokenize()
     for tok in tokens: print(tok)
 
-    print("PARSED AST:")
+    print()
+    print(f'***************************************')
+    print(f'PARSED AST:')
+    print(f'***************************************')
     ast = Parser(tokens).parse()
-    print(ast)
+    print_pretty_ast(ast)
