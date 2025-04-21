@@ -137,6 +137,20 @@ class Compiler:
         self.end_block()
       self.emit(('LABEL', exit_label))
 
+    elif isinstance(node, WhileStmt):
+      test_label = self.make_label()
+      body_label = self.make_label()
+      exit_label = self.make_label()
+      self.emit(('LABEL', test_label))
+      self.compile(node.test)
+      self.emit(('JMPZ', exit_label))  # Branch directly to exit_label if top of stack is EQUAL to ZERO (a.k.a. False)
+      self.emit(('LABEL', body_label))
+      self.begin_block()
+      self.compile(node.body_stmts)
+      self.end_block()
+      self.emit(('JMP', test_label))
+      self.emit(('LABEL', exit_label))
+
     elif isinstance(node, Stmts):
       for stmt in node.stmts:
         self.compile(stmt)
