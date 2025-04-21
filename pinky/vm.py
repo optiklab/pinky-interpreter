@@ -63,22 +63,33 @@ import codecs
 class VM:
   def __init__(self):
     self.stack = []
+    self.labels = {}
     self.pc = 0
     self.sp = 0
     self.is_running = False
+
+  def create_label_table(self, instructions):
+    self.labels = {}
+    pc = 0
+    for instruction in instructions:
+      opcode, *args = instruction
+      if opcode == 'LABEL':
+        self.labels.update({args[0]: pc})
+        print("GENERATED LABEL:", args[0], pc)
+      pc += 1
 
   def run(self, instructions):
     self.pc = 0
     self.sp = 0
     self.is_running = True
 
+    # Generate a dict with label names and their corresponding PC positions/addresses in the code
+    self.create_label_table(instructions)
+
     while self.is_running:
       opcode, *args = instructions[self.pc]
       self.pc = self.pc + 1
       getattr(self, opcode)(*args) #--> invoke the method that matches the opcode name
-
-  def LABEL(self, name):
-    pass
 
   def PUSH(self, value):
     self.stack.append(value)
@@ -241,6 +252,17 @@ class VM:
   def PRINTLN(self):
     valtype, val = self.POP()
     print(codecs.escape_decode(bytes(stringify(val), "utf-8"))[0].decode("utf-8"), end='\n')
+
+  def LABEL(self, name):
+    pass
+
+  def JMP(self, label):
+    self.pc = self.labels[label]
+
+  def JMPZ(self, label):
+    valtype, val = self.POP()
+    if val == 0 or val == False:
+      self.pc = self.labels[label]
 
   def HALT(self):
     self.is_running = False
