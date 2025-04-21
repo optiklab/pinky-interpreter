@@ -49,6 +49,11 @@ class LLVMModule:
     self.function = ir.Function(self.module, ir.FunctionType(i32, []), "main")
     self.block = self.function.append_basic_block()
     self.builder = ir.IRBuilder(self.block)
+
+    self.print_i32 = ir.Function(self.module, ir.FunctionType(void, [i32]), name="print_i32")
+    self.print_f64 = ir.Function(self.module, ir.FunctionType(void, [f64]), name="print_f64")
+    self.print_i1  = ir.Function(self.module, ir.FunctionType(void, [i1]),  name="print_i1")
+
     self.vars = {}
 
   def get_var(self, name):
@@ -170,7 +175,7 @@ class LLVMGenerator:
       operandtype, operandval = self.generate(node.operand, module)
       if node.op.token_type == TOK_MINUS:
         if operandtype == TYPE_NUMBER:
-          return (TYPE_NUMBER, module.builder.neg(operandval))
+          return (TYPE_NUMBER, module.builder.fneg(operandval))
         else:
           compile_error(f'Unsupported operator {node.op.lexeme!r} with {operandtype}.', node.op.line)
 
@@ -194,8 +199,11 @@ class LLVMGenerator:
         self.generate(stmt, module)
 
     if isinstance(node, PrintStmt):
-      #TODO:
-      pass
+      exprtype, exprval = self.generate(node.value, module)
+      if exprtype == TYPE_NUMBER:
+        module.builder.call(module.print_f64, [exprval])  # Call external "print_f64" function declared in a C file
+      if exprtype == TYPE_BOOL:
+        module.builder.call(module.print_i1, [exprval])  # Call external "print_i1" function declared in a C file
 
     if isinstance(node, IfStmt):
       #TODO:
@@ -214,6 +222,7 @@ class LLVMGenerator:
   def generate_main(self, node):
     module = LLVMModule()
     self.generate(node, module)
+    module.builder.ret(ir.Constant(i32, 0)) # manually adding a return 0 at the end of our main function
     return module
 
 ############################################################
