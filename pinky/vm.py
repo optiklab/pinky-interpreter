@@ -54,6 +54,7 @@
 #      ('JMPZ', name)        # Jump to label name if top of stack is zero (or false)
 #      ('JSR', name)         # Jump to subroutine/function and keep track of the returning PC
 #      ('RTS',)              # Return from subroutine/function
+#      ('HALT',)             # Halt/stops the execution
 
 class VM:
   def __init__(self):

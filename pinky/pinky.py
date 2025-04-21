@@ -36,12 +36,13 @@ if __name__ == '__main__':
       print(f'{Colors.GREEN}***************************************{Colors.WHITE}')
       print_pretty_ast(ast)
 
-      #print()
-      #print(f'{Colors.GREEN}***************************************{Colors.WHITE}')
-      #print(f'{Colors.GREEN}INTERPRETER:{Colors.WHITE}')
-      #print(f'{Colors.GREEN}***************************************{Colors.WHITE}')
-    #interpreter = Interpreter()
-    #interpreter.interpret_ast(ast)
+      print()
+      print(f'{Colors.GREEN}***************************************{Colors.WHITE}')
+      print(f'{Colors.GREEN}INTERPRETER:{Colors.WHITE}')
+      print(f'{Colors.GREEN}***************************************{Colors.WHITE}')
+
+    interpreter = Interpreter()
+    interpreter.interpret_ast(ast)
 
     if VERBOSE:
       print()
@@ -50,7 +51,9 @@ if __name__ == '__main__':
       print(f'{Colors.GREEN}***************************************{Colors.WHITE}')
 
     compiler = Compiler()
-    code = compiler.compile_code(ast)
-    print(code)
+    code = compiler.generate_code(ast)
+    for instruction in code:
+      print(instruction)
+
     #vm = VM()
     #vm.run(code)

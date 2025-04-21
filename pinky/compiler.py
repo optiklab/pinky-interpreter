@@ -21,33 +21,59 @@ class Compiler:
       value = (TYPE_NUMBER, float(node.value))
       self.emit(('PUSH', value))
 
-    if isinstance(node, Float):
+    elif isinstance(node, Float):
       value = (TYPE_NUMBER, float(node.value))
       self.emit(('PUSH', value))
 
-    #TODO: emit instructions for booleans and strings...
+    elif isinstance(node, Bool):
+      value = (TYPE_BOOL, True if node.value == True or node.value == 'true' else False)
+      self.emit(('PUSH', value))
 
-    if isinstance(node, BinOp):
+    elif isinstance(node, String):
+      value = (TYPE_STRING, stringify(node.value))
+      self.emit(('PUSH', value))
+
+    elif isinstance(node, BinOp):
       self.compile(node.left)
       self.compile(node.right)
       if node.op.token_type == TOK_PLUS:
         self.emit(('ADD',))
-      if node.op.token_type == TOK_MINUS:
+      elif node.op.token_type == TOK_MINUS:
         self.emit(('SUB',))
-      #TODO: *, /, ^, %, etc.
+      elif node.op.token_type == TOK_STAR:
+        self.emit(('MUL',))
+      elif node.op.token_type == TOK_SLASH:
+        self.emit(('DIV',))
+      elif node.op.token_type == TOK_CARET:
+        self.emit(('EXP',))
+      elif node.op.token_type == TOK_MOD:
+        self.emit(('MOD',))
+      elif node.op.token_type == TOK_LT:
+        self.emit(('LT',))
+      elif node.op.token_type == TOK_GT:
+        self.emit(('GT',))
+      elif node.op.token_type == TOK_LE:
+        self.emit(('LE',))
+      elif node.op.token_type == TOK_GE:
+        self.emit(('GE',))
+      elif node.op.token_type == TOK_EQ:
+        self.emit(('EQ',))
+      elif node.op.token_type == TOK_NE:
+        self.emit(('NE',))
 
-    if isinstance(node, PrintStmt):
+    elif isinstance(node, PrintStmt):
       self.compile(node.value)
       if node.end == '':
         self.emit(('PRINT',))
       else:
         self.emit(('PRINTLN',))
 
-    if isinstance(node, Stmts):
+    elif isinstance(node, Stmts):
       for stmt in node.stmts:
         self.compile(stmt)
 
-  def compile_code(self, node):
-    #TODO: Create the global parent environment
+  def generate_code(self, node):
+    self.emit(('LABEL', 'START'))
     self.compile(node)
+    self.emit(('HALT',))
     return self.code
