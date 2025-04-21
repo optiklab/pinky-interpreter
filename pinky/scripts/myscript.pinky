@@ -1,11 +1,11 @@
-x := 0
+x := 5
 
-func say()
-  println 'Hello1!'
-  println 'Hello2!'
-  println 'Hello3!'
+func say(a, b, c)
+  println a
+  println b
+  println c
 end
 
-say()
+say("a", "b", 1 + 2 + x)
 
-println("After the call...")
+println "Goodbye!"
