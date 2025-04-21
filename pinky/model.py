@@ -283,3 +283,15 @@ class FuncCallStmt(Stmt):
     self.expr = expr
   def __repr__(self):
     return f'FuncCallStmt({self.expr})'
+
+
+class RetStmt(Stmt):
+  '''
+  "ret" <expr>
+  '''
+  def __init__(self, value, line):
+    assert isinstance(value, Expr), value
+    self.value = value
+    self.line = line
+  def __repr__(self):
+    return f'RetStmt[{self.value}]'

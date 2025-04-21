@@ -36,4 +36,4 @@ if __name__ == '__main__':
     print(f'{Colors.GREEN}INTERPRETER:{Colors.WHITE}')
     print(f'{Colors.GREEN}***************************************{Colors.WHITE}')
     interpreter = Interpreter()
-    interpreter.interpret_ast(ast)
+    #interpreter.interpret_ast(ast)

@@ -6,8 +6,7 @@ func factorial(n)
   for i := 1, n do
     mul := mul * i
   end
-  println("The factorial of " + n + " is " + mul)
+  ret mul
 end
 
-factorial(5)
-factorial(6)
+println factorial(6)
