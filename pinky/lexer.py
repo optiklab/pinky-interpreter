@@ -14,6 +14,8 @@ class Lexer:
     return ch
 
   def peek(self):
+    if self.curr >= len(self.source):
+      return '\0'
     return self.source[self.curr]
 
   def lookahead(self, n=1):
@@ -39,6 +41,19 @@ class Lexer:
       self.add_token(TOK_FLOAT)
     else:
       self.add_token(TOK_INTEGER)
+
+  def handle_string(self, start_quote):
+    while self.peek() != start_quote and not(self.curr >= len(self.source)):
+      self.advance()
+    if self.curr >= len(self.source):
+      raise SyntaxError(f'[Line {self.line}] Unterminated string.')
+    self.advance() # Consume the ending quote
+    self.add_token(TOK_STRING)
+
+  def handle_identifier(self):
+    while self.peek().isalnum() or self.peek() == '_':
+      self.advance()
+    self.add_token(TOK_IDENTIFIER)
 
   def add_token(self, token_type):
     self.tokens.append(Token(token_type, self.source[self.start:self.curr], self.line))
@@ -81,7 +96,10 @@ class Lexer:
         self.add_token(TOK_GE if self.match('=') else TOK_GT)
       elif ch == ':':
         self.add_token(TOK_ASSIGN if self.match('=') else TOK_COLON)
+      elif ch == '"' or ch == '\'':
+        self.handle_string(ch)
       elif ch.isdigit():
         self.handle_number()
-      #TODO: handle_string() --> "something" or 'something'
+      elif ch.isalpha() or ch == '_':
+        self.handle_identifier()
     return self.tokens
