@@ -4,14 +4,18 @@ from tokens import *
 from utils import *
 
 class Symbol:
-  def __init__(self, name):
+  def __init__(self, name, depth=0):
     self.name = name
+    self.depth = depth
 
 class Compiler:
   def __init__(self):
     self.code = []
+    self.locals = []
     self.globals = []
     self.numglobals = 0
+    self.numlocals = 0
+    self.scope_depth = 0
     self.label_counter = 0
 
   def make_label(self):
@@ -22,10 +26,32 @@ class Compiler:
     self.code.append(instruction)
 
   def get_symbol(self, name):
+    # Loop all the locals from the local symtab
+    i = 0
+    for symbol in self.locals:
+      if symbol.name == name:
+        return (symbol, i) # <-- return a tuple with the symbol and the "slot" where we can find it in the stack
+      i += 1
+    i = 0
+    # Loop all the globals from the global symtab
+    i = 0
     for symbol in self.globals:
       if symbol.name == name:
-        return symbol
+        return (symbol, i)
+      i += 1
     return None
+
+  def begin_block(self):
+    self.scope_depth += 1
+
+  def end_block(self):
+    self.scope_depth -= 1
+    # Loop and remove all the locals that are "deeper" than the current scope depth
+    i = self.numlocals - 1
+    while self.numlocals > 0 and self.locals[i].depth > self.scope_depth:
+      self.emit(('POP',))
+      self.numlocals -= 1
+      i -= 1
 
   def compile(self, node):
     if isinstance(node, Integer):
@@ -105,11 +131,15 @@ class Compiler:
       exit_label = self.make_label()
       self.emit(('JMPZ', else_label))  # Branch directly to else_label if top of stack is EQUAL to ZERO (a.k.a. False)
       self.emit(('LABEL', then_label))
+      self.begin_block()
       self.compile(node.then_stmts)
+      self.end_block()
       self.emit(('JMP', exit_label))
       self.emit(('LABEL', else_label))
       if node.else_stmts:
+        self.begin_block()
         self.compile(node.else_stmts)
+        self.end_block()
       self.emit(('LABEL', exit_label))
 
     elif isinstance(node, Stmts):
@@ -120,19 +150,32 @@ class Compiler:
       self.compile(node.right)
       symbol = self.get_symbol(node.left.name)
       if not symbol:
-        new_symbol = Symbol(node.left.name)
-        self.globals.append(new_symbol)
-        self.emit(('STORE_GLOBAL', new_symbol.name))
-        self.numglobals += 1
+        new_symbol = Symbol(node.left.name, self.scope_depth)
+        if self.scope_depth == 0:
+          self.globals.append(new_symbol)
+          self.emit(('STORE_GLOBAL', new_symbol.name))
+          self.numglobals += 1
+        else:
+          self.locals.append(new_symbol)
+          self.emit(('STORE_LOCAL', self.numlocals))
+          self.numlocals += 1
       else:
-        self.emit(('STORE_GLOBAL', symbol.name))
+        sym, slot = symbol
+        if sym.depth == 0:
+          self.emit(('STORE_GLOBAL', sym.name))
+        else:
+          self.emit(('STORE_LOCAL', slot))
 
     elif isinstance(node, Identifier):
       symbol = self.get_symbol(node.name)
       if not symbol:
         compile_error(f'Variable {node.name} is not defined.', node.line)
       else:
-        self.emit(('LOAD_GLOBAL', symbol.name))
+        sym, slot = symbol
+        if sym.depth == 0:
+          self.emit(('LOAD_GLOBAL', sym.name))
+        else:
+          self.emit(('LOAD_LOCAL', slot))
 
   def print_code(self):
     i = 0
