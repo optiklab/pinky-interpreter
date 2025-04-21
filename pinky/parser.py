@@ -59,27 +59,26 @@ class Parser:
       return UnOp(op, operand, line=self.previous_token().line)
     return self.primary()
 
-  # <factor>  ::=  <unary>
-  def factor(self):
-    return self.unary()
-
-  # <term>  ::=  <factor> ( ('*'|'/') <factor> )*
-  def term(self):
-    expr = self.factor()
+  # <multiplication>  ::=  <unary> ( ('*'|'/') <unary> )*
+  def multiplication(self):
+    expr = self.unary()
     while self.match(TOK_STAR) or self.match(TOK_SLASH):
       op = self.previous_token()
-      right = self.factor()
+      right = self.unary()
       expr = BinOp(op, expr, right, self.previous_token().line)
     return expr
 
-  # <expr>  ::=  <term> ( ('+'|'-') <term> )*
-  def expr(self):
-    expr = self.term()
+  # <addition>  ::=  <multiplication> ( ('+'|'-') <multiplication> )*
+  def addition(self):
+    expr = self.multiplication()
     while self.match(TOK_PLUS) or self.match(TOK_MINUS):
       op = self.previous_token()
-      right = self.term()
+      right = self.multiplication()
       expr = BinOp(op, expr, right, line=self.previous_token().line)
     return expr
+
+  def expr(self):
+    return self.addition()
 
   def parse(self):
     ast = self.expr()
