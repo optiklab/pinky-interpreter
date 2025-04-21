@@ -208,18 +208,15 @@ class Compiler:
       end_label = self.make_label()
       self.emit(('JMP', end_label))
       self.emit(('LABEL', new_func.name))
-
       self.begin_block()
-
       # Set params as local variables
       for param in node.params:
         new_symbol = Symbol(name=param.name, symtype=SYM_VAR, depth=self.scope_depth)
         self.locals.append(new_symbol)
         self.emit(('SET_SLOT', str(len(self.locals) - 1) + " (" + str(new_symbol.name) + ")"))
-
       self.compile(node.body_stmts)
       self.end_block()
-
+      self.emit(('PUSH', (TYPE_NUMBER, 0)))
       self.emit(('RTS',))
       self.emit(('LABEL', end_label))
 
@@ -235,6 +232,10 @@ class Compiler:
       numargs = (TYPE_NUMBER, len(node.args))
       self.emit(('PUSH', numargs))
       self.emit(('JSR', node.name))
+
+    elif isinstance(node, RetStmt):
+      self.compile(node.value)
+      self.emit(('RTS',))
 
     elif isinstance(node, FuncCallStmt):
       self.compile(node.expr)
