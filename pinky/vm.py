@@ -60,7 +60,49 @@ class VM:
   def __init__(self):
     self.stack = []
     self.pc = 0
+    self.sp = 0
+    self.is_running = False
 
   def run(self, instructions):
+    self.pc = 0
+    self.sp = 0
+    self.is_running = True
+
+    while self.is_running:
+      opcode, *args = instructions[self.pc]
+      self.pc = self.pc + 1
+      getattr(self, opcode)(*args) #--> invoke the method that matches the opcode name
+
+  def LABEL(self, name):
+    pass
+
+  def PUSH(self, value):
     #TODO:
     pass
+
+  def POP(self):
+    #TODO:
+    pass
+
+  def ADD(self):
+    #TODO:
+    pass
+
+  def SUB(self):
+    #TODO:
+    pass
+
+  def MUL(self):
+    #TODO:
+    pass
+
+  def PRINT(self):
+    #TODO:
+    pass
+
+  def PRINTLN(self):
+    #TODO:
+    pass
+
+  def HALT(self):
+    self.is_running = False
