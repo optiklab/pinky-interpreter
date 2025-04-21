@@ -61,7 +61,8 @@ from utils import *
 import codecs
 
 class Frame:
-  def __init__(self, ret_pc, fp):
+  def __init__(self, name, ret_pc, fp):
+    self.name = name
     self.ret_pc = ret_pc
     self.fp = fp
 
@@ -274,6 +275,15 @@ class VM:
     valtype, val = self.POP()
     if val == 0 or val == False:
       self.pc = self.labels[label]
+
+  def JSR(self, label):
+    new_frame = Frame(name=label, ret_pc=self.pc, fp=self.sp)
+    self.frames.append(new_frame)
+    self.pc = self.labels[label] # <-- jump to the subroutine
+
+  def RTS(self):
+    self.pc = self.frames[-1].ret_pc
+    self.frames.pop()
 
   def LOAD_GLOBAL(self, slot):
     self.PUSH(self.globals[slot])

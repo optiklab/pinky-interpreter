@@ -1,7 +1,11 @@
 x := 0
 
 func say()
-  println 'Hello!'
+  println 'Hello1!'
+  println 'Hello2!'
+  println 'Hello3!'
 end
 
 say()
+
+println("After the call...")
