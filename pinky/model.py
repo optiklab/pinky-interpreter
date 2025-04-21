@@ -208,5 +208,21 @@ class Assignment(Stmt):
 
 
 class ForStmt(Stmt):
-  #TODO:
-  pass
+  '''
+  "for" <identifier> ":=" <start> "," <end> ("," <step>)? "do" <body_stmts> "end"
+  '''
+  def __init__(self, ident, start, end, step, body_stmts, line):
+    assert isinstance(ident, Identifier), ident
+    assert isinstance(start, Expr), start
+    assert isinstance(end, Expr), end
+    assert isinstance(step, Expr) or step is None, step
+    assert isinstance(body_stmts, Stmts), body_stmts
+    self.ident = ident
+    self.start = start
+    self.end = end
+    self.step = step
+    self.body_stmts = body_stmts
+    self.line = line
+  def __repr__(self):
+    return f'ForStmt({self.ident}, {self.start}, {self.end}, {self.step}, {self.body_stmts})'
+

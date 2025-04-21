@@ -179,6 +179,32 @@ class Interpreter:
           break
         self.interpret(node.body_stmts, new_env) # pass the new child environment for the scope of the while block
 
+    elif isinstance(node, ForStmt):
+      varname = node.ident.name
+      itype, i = self.interpret(node.start, env)
+      endtype, end = self.interpret(node.end, env)
+      block_new_env = env.new_env()
+      if i < end:
+        if node.step is None:
+          step = 1
+        else:
+          steptype, step = self.interpret(node.step, env)
+        while i <= end:
+          newval = (TYPE_NUMBER, i)
+          env.set_var(varname, newval)
+          self.interpret(node.body_stmts, block_new_env) # pass the new child environment for the scope of the while block
+          i = i + step
+      else:
+        if node.step is None:
+          step = -1
+        else:
+          steptype, step = self.interpret(node.step, env)
+        while i >= end:
+          newval = (TYPE_NUMBER, i)
+          env.set_var(varname, newval)
+          self.interpret(node.body_stmts, block_new_env) # pass the new child environment for the scope of the while block
+          i = i + step
+
   def interpret_ast(self, node):
     # Entry point of our interpreter creating a brand new global/parent environment
     env = Environment()
