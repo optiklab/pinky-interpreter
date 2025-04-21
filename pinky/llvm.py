@@ -253,9 +253,24 @@ class LLVMGenerator:
       # Exit
       module.builder.position_at_end(exit_label)
 
-    if isinstance(node, WhileStmt):
-      #TODO:
-      pass
+    elif isinstance(node, WhileStmt):
+      # Create LLVM blocks/labels for test, body, and exit
+      test_label = module.function.append_basic_block()
+      body_label = module.function.append_basic_block()
+      exit_label = module.function.append_basic_block()
+      # Test
+      module.builder.branch(test_label)
+      module.builder.position_at_end(test_label)
+      testtype, testval = self.generate(node.test, module)
+      if testtype != TYPE_BOOL:
+        compile_error("While test is not a boolean expression.", node.line)
+      module.builder.cbranch(testval, body_label, exit_label)
+      module.builder.position_at_end(body_label)
+      # Body
+      self.generate(node.body_stmts, module)
+      module.builder.branch(test_label)
+      # Exit
+      module.builder.position_at_end(exit_label)
 
     if isinstance(node, FuncDecl):
       compile_error(f"Function declarations are not implemented in the current LLVM IR generator.", node.line)
