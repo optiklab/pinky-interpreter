@@ -63,12 +63,12 @@ class Parser:
       else:
         return Grouping(expr, line=self.previous_token().line)
 
-  # <exponent> ::= <primary> ( "^" <primary> )*
+  # <exponent> ::= <primary> ( "^" <exponent> )*
   def exponent(self):
     expr = self.primary()
     while self.match(TOK_CARET):
       op = self.previous_token()
-      right = self.primary()
+      right = self.exponent()
       expr = BinOp(op, expr, right, line=op.line)
     return expr
 
