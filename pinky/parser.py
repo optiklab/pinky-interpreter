@@ -7,28 +7,37 @@ class Parser:
     self.curr = 0
 
   def advance(self):
-    #TODO: consume the current token and advance to the next one
-    pass
+    token = self.tokens[self.curr]
+    self.curr = self.curr + 1
+    return token
 
   def peek(self):
-    #TODO: return the current token
-    pass
+    return self.tokens[self.curr]
 
   def is_next(self, expected_type):
-    #TODO: check if the next token matches the expected type
-    pass
+    if self.curr >= len(self.tokens):
+      return False
+    return self.peek().token_type == expected_type
 
   def expect(self, expected_type):
-    #TODO: test if the current token is of the expected type, otherwise show error message
-    pass
-
-  def match(self, expected_type):
-    #TODO: check if current token matches the expected type and return the token, otherwise returns False
-    pass
+    if self.curr >= len(self.tokens):
+      raise SyntaxError(f'Found {self.previous_token().lexeme!r} at the end of parsing')
+    elif self.peek().token_type == expected_type:
+      token = self.advance()
+      return token
+    else:
+      raise SyntaxError(f'Expected {expected_type!r}, found {self.peek().lexeme!r}.')
 
   def previous_token(self):
-    #TODO: return the previous token
-    pass
+    return self.tokens[self.curr - 1]
+
+  def match(self, expected_type):
+    if self.curr >= len(self.tokens):
+      return False
+    if self.peek().token_type != expected_type:
+      return False
+    self.curr = self.curr + 1 # If it is a match, we return True and also comsume that token
+    return True
 
   # <primary>  ::=  <integer> | <float> | '(' <expr> ')'
   def primary(self):
