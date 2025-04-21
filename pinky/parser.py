@@ -40,21 +40,23 @@ class Parser:
     self.curr = self.curr + 1 # If it is a match, we return True and also comsume that token
     return True
 
-  # <primary>  ::=  <integer> | <float> | '(' <expr> ')'
+  # <primary>  ::=  <integer>
+  #              |  <float>
+  #              |  <bool>
+  #              |  <string>
+  #              | '(' <expr> ')'
   def primary(self):
-    if self.match(TOK_INTEGER): return Integer(int(self.previous_token().lexeme), line=self.previous_token().line)
-    if self.match(TOK_FLOAT): return Float(float(self.previous_token().lexeme), line=self.previous_token().line)
-
-    #############################################
-    # TODO: 
-    # Change the parser to allow adding nodes of 
-    # the type 'Bool' and 'String'.
-    # Your parser should allow expressions like:
-    # 2 + (47 * -21) + ' cm' - false
-    # PS: Don't worry about interpreter yet!
-    #############################################
-
-    if self.match(TOK_LPAREN):
+    if self.match(TOK_INTEGER):
+      return Integer(int(self.previous_token().lexeme), line=self.previous_token().line)
+    elif self.match(TOK_FLOAT):
+      return Float(float(self.previous_token().lexeme), line=self.previous_token().line)
+    elif self.match(TOK_TRUE):
+      return Bool(True, line=self.previous_token().line)
+    elif self.match(TOK_FALSE):
+      return Bool(False, line=self.previous_token().line)
+    elif self.match(TOK_STRING):
+      return String(str(self.previous_token().lexeme[1:-1]), line=self.previous_token().line) # Remove the quotes at the beginning and at the end of the lexeme
+    elif self.match(TOK_LPAREN):
       expr = self.expr()
       if (not self.match(TOK_RPAREN)):
         parse_error(f'Error: ")" expected.', self.previous_token().line)
