@@ -2,6 +2,7 @@ println 1 + 2
 
 x := 0
 x := x + 1
+println("The value of x is " + x)
 
 -- Simple if statement test
 if 5 ~= 2 then
