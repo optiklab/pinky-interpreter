@@ -46,6 +46,9 @@ i1   = ir.IntType(1)
 class LLVMModule:
   def __init__(self):
     self.module = ir.Module("pinky_subset")
+    self.function = ir.Function(self.module, ir.FunctionType(i32, []), "main")
+    self.block = self.function.append_basic_block()
+    self.builder = ir.IRBuilder(self.block)
     self.vars = {}
 
   def get_var(self, name):
@@ -62,47 +65,46 @@ class LLVMModule:
 class LLVMGenerator:
   def generate(self, node, module):
     if isinstance(node, Integer):
-      #TODO:
-      pass
+      return (TYPE_NUMBER, ir.Constant(f64, float(node.value)))
 
     if isinstance(node, Float):
-      #TODO:
-      pass
+      return (TYPE_NUMBER, ir.Constant(f64, float(node.value)))
 
     if isinstance(node, Bool):
-      #TODO:
-      pass
+      return (TYPE_BOOL, ir.Constant(i1, int(node.value)))
 
     if isinstance(node, String):
       compile_error(f"Strings are not implemented in our current LLVM IR generator.", node.line)
 
     if isinstance(node, Grouping):
-      #TODO:
-      pass
+      return self.generate(node.value, module)
 
     if isinstance(node, Identifier):
       #TODO:
       pass
 
     if isinstance(node, Assignment):
-      #TODO:
-      pass
+      righttype, rightval = self.generate(node.right, module)
+      #TODO: save the variable...
 
     if isinstance(node, BinOp):
-      #TODO:
-      pass
+      lefttype, leftval = self.generate(node.left, module)
+      righttype, rightval = self.generate(node.right, module)
+      if node.op.token_type == TOK_PLUS:
+        if lefttype == TYPE_NUMBER and righttype == TYPE_NUMBER:
+          return (TYPE_NUMBER, module.builder.fadd(leftval, rightval))
+        else:
+          compile_error(f"Unsupported operator {node.op.lexeme!r} between {lefttype} and {righttype}.", node.op.line)
 
     if isinstance(node, UnOp):
-      #TODO:
       pass
 
     if isinstance(node, LogicalOp):
-      #TODO:
       pass
 
     if isinstance(node, Stmts):
-      #TODO:
-      pass
+      for stmt in node.stmts:
+        self.generate(stmt, module)
 
     if isinstance(node, PrintStmt):
       #TODO:
