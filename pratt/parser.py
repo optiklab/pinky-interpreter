@@ -7,6 +7,8 @@ bp = {
   '/': 2,
   '+': 1,
   '-': 1,
+  '(': 0,
+  ')': 0,
 }
 
 class PrattParser:
@@ -48,6 +50,11 @@ class PrattParser:
     return True
 
   def nud(self):
+    if self.match(TOK_LPAREN):
+      inner = self.expr(rbp=bp['('])
+      self.expect(TOK_RPAREN) # <-- consume the remaining ')' token
+      return Grouping(inner, line=self.previous_token().line)
+
     if self.match(TOK_INTEGER):
       return Integer(int(self.previous_token().lexeme), line=self.previous_token().line)
     if self.match(TOK_FLOAT):
@@ -56,12 +63,12 @@ class PrattParser:
   def led(self, left):
     if self.match(TOK_PLUS) or self.match(TOK_MINUS) or self.match(TOK_STAR) or self.match(TOK_SLASH):
       op = self.previous_token()
-      right = self.expr()
+      right = self.expr(bp[op.lexeme])
       return BinOp(op, left, right, line=op.line)
 
   def expr(self, rbp=0):
     left = self.nud()
-    while self.curr < len(self.tokens):
+    while self.curr < len(self.tokens) and bp[self.peek().lexeme] > rbp:
       left = self.led(left)
     return left
 
