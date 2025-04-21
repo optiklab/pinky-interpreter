@@ -67,6 +67,41 @@ class Interpreter:
         else:
           runtime_error(f'Unsupported operator {node.op.lexeme!r} between {lefttype} and {righttype}.', node.op.line)
 
+      elif node.op.token_type == TOK_GT:
+        if (lefttype == TYPE_NUMBER and righttype == TYPE_NUMBER) or (lefttype == TYPE_STRING and righttype == TYPE_STRING):
+          return (TYPE_BOOL, leftval > rightval)
+        else:
+          runtime_error(f'Unsupported operator {node.op.lexeme!r} between {lefttype} and {righttype}.', node.op.line)
+
+      elif node.op.token_type == TOK_GE:
+        if (lefttype == TYPE_NUMBER and righttype == TYPE_NUMBER) or (lefttype == TYPE_STRING and righttype == TYPE_STRING):
+          return (TYPE_BOOL, leftval >= rightval)
+        else:
+          runtime_error(f'Unsupported operator {node.op.lexeme!r} between {lefttype} and {righttype}.', node.op.line)
+
+      elif node.op.token_type == TOK_LT:
+        if (lefttype == TYPE_NUMBER and righttype == TYPE_NUMBER) or (lefttype == TYPE_STRING and righttype == TYPE_STRING):
+          return (TYPE_BOOL, leftval < rightval)
+        else:
+          runtime_error(f'Unsupported operator {node.op.lexeme!r} between {lefttype} and {righttype}.', node.op.line)
+
+      elif node.op.token_type == TOK_LE:
+        if (lefttype == TYPE_NUMBER and righttype == TYPE_NUMBER) or (lefttype == TYPE_STRING and righttype == TYPE_STRING):
+          return (TYPE_BOOL, leftval <= rightval)
+        else:
+          runtime_error(f'Unsupported operator {node.op.lexeme!r} between {lefttype} and {righttype}.', node.op.line)
+
+      elif node.op.token_type == TOK_EQEQ:
+        if (lefttype == TYPE_NUMBER and righttype == TYPE_NUMBER) or (lefttype == TYPE_STRING and righttype == TYPE_STRING) or (lefttype == TYPE_BOOL and righttype == TYPE_BOOL):
+          return (TYPE_BOOL, leftval == rightval)
+        else:
+          runtime_error(f'Unsupported operator {node.op.lexeme!r} between {lefttype} and {righttype}.', node.op.line)
+
+      elif node.op.token_type == TOK_NE:
+        if (lefttype == TYPE_NUMBER and righttype == TYPE_NUMBER) or (lefttype == TYPE_STRING and righttype == TYPE_STRING) or (lefttype == TYPE_BOOL and righttype == TYPE_BOOL):
+          return (TYPE_BOOL, leftval != rightval)
+        else:
+          runtime_error(f'Unsupported operator {node.op.lexeme!r} between {lefttype} and {righttype}.', node.op.line)
 
     elif isinstance(node, UnOp):
       operandtype, operandval = self.interpret(node.operand)

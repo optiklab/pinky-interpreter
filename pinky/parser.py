@@ -63,15 +63,22 @@ class Parser:
       else:
         return Grouping(expr, line=self.previous_token().line)
 
-  # <unary>  ::=  ('+'|'-'|'~') <unary>  |  <primary>
-  def unary(self):
-    if self.match(TOK_NOT) or self.match(TOK_MINUS) or self.match(TOK_PLUS):
-      op = self.previous_token()
-      operand = self.unary()
-      return UnOp(op, operand, line=self.previous_token().line)
-    return self.primary()
+  # <exponent> ::= <primary> ( "^" <primary> )*
+  def exponent(self):
+    #TODO:
+    pass
 
-  # <multiplication>  ::=  <unary> ( ('*'|'/') <unary> )*
+  # <unary>  ::=  ('+'|'-'|'~')* <exponent>
+  def unary(self):
+    #TODO:
+    pass
+  
+  # <modulo> ::= <unary> ( "%" <unary> )*
+  def modulo(self):
+    #TODO:
+    pass
+
+  # <multiplication>  ::=  <modulo> ( ('*'|'/') <modulo> )*
   def multiplication(self):
     expr = self.unary()
     while self.match(TOK_STAR) or self.match(TOK_SLASH):
@@ -89,8 +96,32 @@ class Parser:
       expr = BinOp(op, expr, right, line=self.previous_token().line)
     return expr
 
+  # <comparison> ::= <addition> (( ">" | ">=" | "<" | "<=" ) <addition>)*
+  def comparison(self):
+    #TODO:
+    pass
+
+  # <equality>  ::=  <comparison> ( ( "~=" | "==" ) <comparison> )*
+  def equality(self):
+    #TODO:
+    pass
+
   def expr(self):
-    return self.addition()
+    #################################################################
+    # TODO:
+    # Your goal is to change the parser to allow expressions with
+    # comparison (>, <, >=, <=), equality (==, ~=), % and ^.
+    # Starting at expr(), the order of calls is:
+    # 1. equality()
+    # 2. comparison()
+    # 3. addition()
+    # 4. multiplication()
+    # 5. modulo()
+    # 6. unary()
+    # 7. exponent()
+    # 8. primary()
+    #################################################################
+    return self.equality()
 
   def parse(self):
     ast = self.expr()
