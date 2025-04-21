@@ -57,4 +57,14 @@ class Lexer:
       elif ch == ';': self.add_token(TOK_SEMICOLON)
       elif ch == '?': self.add_token(TOK_QUESTION)
       elif ch == '%': self.add_token(TOK_MOD)
+      elif ch == '=':
+        if self.match('='):
+          self.add_token(TOK_EQ)
+      elif ch == '~':
+        if self.match('='):
+          self.add_token(TOK_NE)
+        else:
+          self.add_token(TOK_NOT)
+     # TODO:
+     # <, <=, >, >=, :, :=
     return self.tokens
