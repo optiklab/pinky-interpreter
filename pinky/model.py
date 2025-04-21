@@ -142,7 +142,7 @@ class Identifier(Expr):
     self.name = name
     self.line = line
   def __repr__(self):
-    return f'Identifier[{self.name}]'
+    return f'Identifier[{self.name!r}]'
 
 
 class Stmts(Node):
