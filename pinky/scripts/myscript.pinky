@@ -1,12 +1,12 @@
-println (2 + 3) * 5 - 1     --> 24
-println true                --> true
-println 1 == 2              --> false
-println ~(3 > 2) or ~true   --> false
-
-if 3 <= 0 then
-  println "Entered the consequence block."
-else
-  println "Entered the alternative block."
-end
-
-println "Goodbye!"
+println  true == true       --> true
+println  true == false      --> false
+println  false == true      --> false
+println  false == false     --> true
+println  true ~= true       --> false
+println  true ~= false      --> true
+println  false ~= true      --> true
+println  false ~= false     --> false
+println  3 > 2 ~= false     --> true
+println  "this" == "that"   --> false
+println  ~(-1>2)            --> true
+println  "a" + "b" == "ab"  --> true
